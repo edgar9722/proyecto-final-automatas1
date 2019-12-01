@@ -56,7 +56,7 @@ public class analizadorLexico {
                 if(cad.charAt(i)=='('){
                      aux+=cad.charAt(i);
                         i++;
-                    incializacion();
+                    inicializacion();
                     
                 }
                 
@@ -67,35 +67,33 @@ public class analizadorLexico {
     }
     
     public String operador_logico(){
-
         String aux="";
-        while(cad.chatAt(i) == '/' || '*' || '+' || '-'){
+        while(cad.charAt(i) == '/' || cad.charAt(i) == '*' || cad.charAt(i) == '+' || cad.charAt(i) == '-'){
             aux+=cad.charAt(i);
             i++;
         }
         return aux;
     }
-    public  boolean identificador(){
-
+    public boolean identificador(){
+        return false;
     }
 
-    public String letra(){
-        String aux="";
-        while(Character.isLetter(cad.charAt(i))){
-            aux+=cad.charAt(i);
-            i++;
-        }
+    public boolean letra(){
+        boolean aux=false;
+        if (Character.isLetter(cad.charAt(i)))
+            aux=true;
+        i++;
         return aux;
     }
     
-    public int num_entero(){
-        String aux="";
-        while(Character.isDigit(cad.charAt(i))){
-            aux+=cad.charAt(i);
-            i++;
-        }
-        return Integer.parseInt(aux);
+    public boolean num_entero(){
+        boolean aux=false;
+        if(Character.isDigit(cad.charAt(i)))
+            aux=true;
+        i++;
+        return aux;
     }
+    
     public 
     public declaracion_var(){
         
@@ -123,16 +121,13 @@ public class analizadorLexico {
                 i++;
                 if(cad.charAt(i)== 't'){
                     aux+=cad.charAt(i);
-                     i++;
-                     identificador();
+                    i++;
+                    identificador();
                 
-                }else{
+                }else
                     error();
-                }
-            
-            }else{
+            }else
                 error();
-            }
  
         } else if (identificador()){
             aux+=cad.charAt(i);
