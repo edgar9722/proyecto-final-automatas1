@@ -57,7 +57,28 @@ public class analizadorLexico {
             default:
         }
     }
-    
+    public  operador(){
+
+        String aux="";
+        while(cad.chatAt(i) == '/' || '*' || '+' || '-'){
+            aux+=cad.charAt(i);
+            i++;
+        }
+        return aux;
+    }
+    public  operador(){
+
+        String aux="";
+        while(cad.chatAt(i) == '/' || '*' || '+' || '-'){
+            aux+=cad.charAt(i);
+            i++;
+        }
+        return aux;
+    }
+    public  identificador(){
+
+    }
+
     public String letra(){
         String aux="";
         while(Character.isLetter(cad.charAt(i))){
