@@ -53,11 +53,20 @@ public class analizadorLexico {
             case "while":
                 break;
             case "for":
+                if(cad.charAt(i)=='('){
+                     aux+=cad.charAt(i);
+                        i++;
+                    incializacion();
+                    
+                }
+                
+                 
                 break;
             default:
         }
     }
-    public  operador(){
+    
+    public String operador_logico(){
 
         String aux="";
         while(cad.chatAt(i) == '/' || '*' || '+' || '-'){
@@ -66,16 +75,7 @@ public class analizadorLexico {
         }
         return aux;
     }
-    public  operador(){
-
-        String aux="";
-        while(cad.chatAt(i) == '/' || '*' || '+' || '-'){
-            aux+=cad.charAt(i);
-            i++;
-        }
-        return aux;
-    }
-    public  identificador(){
+    public  boolean identificador(){
 
     }
 
@@ -95,5 +95,89 @@ public class analizadorLexico {
             i++;
         }
         return Integer.parseInt(aux);
+    }
+    public 
+    public declaracion_var(){
+        
+    }
+    public expresion(){
+        
+    }
+    public String operador(){
+
+        String aux="";
+        while(cad.chatAt(i) == '/' || '*' || '+' || '-'){
+            aux+=cad.charAt(i);
+            i++;
+        }
+        return aux;
+    }
+    
+    public String inicializacion(){
+        String aux="";
+        if(cad.charAt(i)== 'i'){
+            aux+=cad.charAt(i);
+            i++;
+            if(cad.charAt(i)== 'n'){
+                aux+=cad.charAt(i);
+                i++;
+                if(cad.charAt(i)== 't'){
+                    aux+=cad.charAt(i);
+                     i++;
+                     identificador();
+                
+                }else{
+                    error();
+                }
+            
+            }else{
+                error();
+            }
+ 
+        } else if (identificador()){
+            aux+=cad.charAt(i);
+            i++;
+            if(cad.charAt(i)== '='){
+                aux+=cad.charAt(i);
+                i++;
+                
+                while(Character.isDigit(cad.charAt(i))){
+                    aux+=cad.charAt(i);
+                    i++;
+                    }
+            }else{
+                error();
+            }
+        }else{
+            error();
+        }
+        return aux;
+    }
+    
+    public String incremento(){
+        
+         String aux="";
+         if(cad.charAt(i)== '+'){
+            aux+=cad.charAt(i);
+            i++;
+            if(cad.charAt(i)== '+'){
+                aux+=cad.charAt(i);
+                i++;
+            }else{
+                error();
+            }
+         }else if(cad.charAt(i)== '-'){
+                aux+=cad.charAt(i);
+                i++;
+                    if(cad.charAt(i)== '-'){
+                    aux+=cad.charAt(i);
+                    i++;
+                    }else{
+                    error();
+                    }
+                }else{
+                error();
+         }
+      return aux;   
     }
 }
