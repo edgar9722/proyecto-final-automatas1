@@ -52,15 +52,13 @@ public class analizadorLexico {
                 break;
             case "while":
                 break;
-            case "for":
+            case "for": 
                 if(cad.charAt(i)=='('){
                      aux+=cad.charAt(i);
                         i++;
                     inicializacion();
                     
                 }
-                
-                 
                 break;
             default:
         }
