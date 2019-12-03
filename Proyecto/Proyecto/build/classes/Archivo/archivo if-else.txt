@@ -1,0 +1,6 @@
+inicio
+if(x<=10)
+	x+10;
+else
+	x-10;
+fin

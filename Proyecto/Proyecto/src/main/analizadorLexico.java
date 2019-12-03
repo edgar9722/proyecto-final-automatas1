@@ -14,13 +14,14 @@ public class analizadorLexico {
     DataInputStream in;
     String bufferIn, cad;
     int i, errores = 0;
+    boolean MIF=false;
 
     public analizadorLexico(String f) throws FileNotFoundException {
         programa(f);
     }
 
     public void programa(String f) throws FileNotFoundException {
-        String aux="";
+        String aux = "";
         in = new DataInputStream(new FileInputStream(f));//leemos nuestro archivo de entrada
         try {
             if ((bufferIn = in.readLine()) != null) {//Leemos la primera linea de entrada que tiene que ser 'inicio'
@@ -33,25 +34,40 @@ public class analizadorLexico {
                         error("Sentencia:", "No se declaro");
                     } else {
                         declaracion_sentencia();
-                        if (errores == 0) {
+                        if (errores == 0 && !MIF) {
                             try {
                                 bufferIn = in.readLine();
                                 cad = bufferIn.trim();
-                                i=0;
+                                i = 0;
                                 while (Character.isLetter(cad.charAt(i))) {
                                     aux += cad.charAt(i);
                                     i++;
                                 }
                             } catch (Exception e) {
-                                if (aux.equalsIgnoreCase("fin"))
+                                if (aux.equalsIgnoreCase("fin")) {
                                     System.out.println("Sin errores");
-                                else
+                                } else {
                                     error("buscaba fin y encontro", aux);
+                                }
                             }
-                        }
+                        }else
+                            if (errores == 0) {
+                                i = 0;
+                                try {
+                                    while (Character.isLetter(cad.charAt(i))) {
+                                        aux += cad.charAt(i);
+                                        i++;
+                                    }
+                                }catch (Exception e) {
+                                    if (aux.equalsIgnoreCase("fin"))
+                                        System.out.println("Sin errores");
+                                    else
+                                        error("buscaba fin y encontro", aux);
+                                }
+                            }
                     }
                 } else {
-                    //No comenzo con 'inicio'
+                    error("buscaba inicio y encontro", cad);
                 }
             }
         } catch (IOException io) {
@@ -68,12 +84,12 @@ public class analizadorLexico {
                 i++;
             }//La i termina en la posicion del caracter que no es una letra
         } catch (Exception e) {
-            error("do-while: buscaba un { encontro", "' '");
+            error("do-while: buscaba un { encontro", "__");
             return;
         }
-        cad = cad.replaceAll(" ", "");
         switch (aux) {
             case "if":
+                MIF=true;
                 IF();
                 break;
             case "do":
@@ -83,6 +99,7 @@ public class analizadorLexico {
                 WHILE();
                 break;
             case "for":
+                while (eliminarEspacios());
                 FOR();
                 break;
             default:
@@ -90,8 +107,72 @@ public class analizadorLexico {
         }
     }
 
-    public boolean IF() {
-        return false;
+    public boolean IF() throws IOException {
+        boolean bandera = false;
+        String aux = "";
+        if (cad.charAt(i) == '(') {
+            aux += cad.charAt(i);
+            i++;
+            try {
+                if (expresion_relacional()) {
+                    try {
+                        if (cad.charAt(i) == ')') {
+                            aux += cad.charAt(i);
+                            i++;
+                            bufferIn = in.readLine();
+                            cad = bufferIn.trim();
+                            i=0;
+                            if (sentencia()) {
+                                bufferIn = in.readLine();
+                                cad = bufferIn.trim();
+                                i=0;
+                                try {
+                                    aux="";
+                                    while (Character.isLetter(cad.charAt(i))) {
+                                        aux += cad.charAt(i);
+                                        i++;
+                                    }
+                                } catch (Exception e) {
+                                }
+                                if (!aux.equalsIgnoreCase("") && !aux.equalsIgnoreCase("fin")){
+                                    if (aux.equalsIgnoreCase("else")) {
+                                        bufferIn = in.readLine();
+                                        cad = bufferIn.trim();
+                                        i=0;
+                                        if (sentencia()) {
+                                            bandera = true;
+                                        } else {
+                                            bandera = false;
+                                        }
+                                    }else
+                                        error("se buscaba else pero se encontro", aux);
+                                }else {
+                                    bandera = true;
+                                }
+
+                            } else {
+                                error("sentencia:",String.valueOf(cad.charAt(i)));
+                            }
+
+                        } else {
+                            error("buscaba un ) y se encontro con",String.valueOf(cad.charAt(i)));
+                        }
+                    } catch (Exception e) {
+                        error("buscaba un ) y se encontro con","__");
+                    }
+                } else {
+                    error("buscaba un numero o un identificador y se encontro", String.valueOf(cad.charAt(i)));
+                }
+            }catch (Exception e) {
+                error("se buscaba un ) se encontro","__");
+            }
+        } else {
+            if (cad.charAt(i)==' ')
+                error("se buscaba un ( se encontro", "__");
+            else
+                error("se buscaba un ( se encontro", String.valueOf(cad.charAt(i)));
+        }
+        return bandera;
     }
 
     public boolean DO_WHILE() throws IOException {
@@ -134,7 +215,7 @@ public class analizadorLexico {
                                         error("Do-While: buscaba un ) encontro", String.valueOf(cad.charAt(i)));
                                     }
                                 } else {
-                                    error("expresion_ralacional:", String.valueOf(cad.charAt(i)));
+                                    error("expresion_relacional:", String.valueOf(cad.charAt(i)));
                                 }
                             } else {
                                 error("buscaba un ( encontro", String.valueOf(cad.charAt(i)));
@@ -156,44 +237,87 @@ public class analizadorLexico {
         return bandera;
     }
 
-    public boolean WHILE() {
-        return false;
+    public boolean WHILE() throws IOException {
+        boolean bandera = false;
+        String aux = "";
+        if (cad.charAt(i) == '(') {
+            aux += cad.charAt(i);
+            i++;
+            try {
+                if (expresion_relacional()) {
+                    if (cad.charAt(i) == ')') {
+                        aux += cad.charAt(i);
+                        i++;
+                        bufferIn = in.readLine();
+                        cad = bufferIn.trim();
+                        i=0;
+                        if (sentencia()) {
+                            bandera = true;
+
+                        } else {
+                            /* error */
+                        }
+
+                    } else {
+                        /* error */
+                    }
+                } else {
+                    /* error */
+                }
+            } catch (Exception e) {
+                error("se buscaba un ) se encontro","__");
+            }
+        } else {
+            /* error */
+        }
+        return bandera;
     }
 
-    public boolean FOR() {
+    public boolean FOR() throws IOException {
         boolean aux2 = false;
         String aux = "";
         if (cad.charAt(i) == '(') {
             aux += cad.charAt(i);
             i++;
             if (inicializacion()) {
+                i++;
                 if (cad.charAt(i) == ';') {
                     aux += cad.charAt(i);
                     i++;
+                    recorrer();
                     if (expresion_relacional()) {
                         if (cad.charAt(i) == ';') {
                             aux += cad.charAt(i);
                             i++;
+                            recorrer();
                             if (incremento()) {
                                 if (cad.charAt(i) == ')') {
                                     aux += cad.charAt(i);
                                     i++;
-                                    if (cad.charAt(i) == '{') {
-                                        aux += cad.charAt(i);
-                                        i++;
-                                        if (sentencia()) {
-                                            if (cad.charAt(i) == '}') {
-                                                aux += cad.charAt(i);
-                                                i++;
-                                                aux2 = true;
-                                            } else {
-                                                error("Buscaba un } y se encontro", String.valueOf(cad.charAt(i)));
+                                    try {
+                                        if (cad.charAt(i) == '{') {
+                                            aux += cad.charAt(i);
+                                            bufferIn = in.readLine();
+                                            cad = bufferIn.trim();
+                                            i = 0;
+                                            if (sentencia()) {
+                                                bufferIn = in.readLine();
+                                                cad = bufferIn.trim();
+                                                i = 0;
+                                                if (cad.charAt(i) == '}') {
+                                                    aux += cad.charAt(i);
+                                                    i++;
+                                                    aux2 = true;
+                                                } else {
+                                                    error("Buscaba un } y se encontro", String.valueOf(cad.charAt(i)));
+                                                }
                                             }
+                                        } else {
+                                            error("Buscaba un { y se encontro", String.valueOf(cad.charAt(i)));
                                         }
-                                    } else {
-                                        error("Buscaba un { y se encontro", String.valueOf(cad.charAt(i)));
+                                    } catch (Exception e) {
+                                        error("se buscaba un { se encontro","__");
                                     }
-
                                 } else {
                                     error("Buscaba un ) y se encontro", String.valueOf(cad.charAt(i)));
                                 }
@@ -218,13 +342,18 @@ public class analizadorLexico {
         boolean aux = false;
         if (identificador()) {
             if (operador_logico()) {
-                if (num_entero()) {
+                while (num_entero()) {
+                    i++;
                     aux = true;
                 }
                 if (identificador()) {
                     aux = true;
                 }
+            } else {
+                error("operador_logico: invalido", String.valueOf(cad.charAt(i)));
             }
+        } else {
+            error("identificador:", String.valueOf(cad.charAt(i)) + " se desconoce");
         }
         return aux;
     }
@@ -281,7 +410,6 @@ public class analizadorLexico {
         } else if (cad.charAt(i) == '=') {
             aux += cad.charAt(i);
             i++;
-            aux2 = true;
             if (cad.charAt(i) == '=') {
                 aux += cad.charAt(i);
                 i++;
@@ -314,10 +442,14 @@ public class analizadorLexico {
                 if (cad.charAt(i) == 't') {
                     i++;
                     if (identificador()) {
-                        if (cad.charAt(i) == ';') {
-                            aux = true;
-                        } else {
-                            error("buscar un ; encontro", String.valueOf(cad.charAt(i)));
+                        try {
+                            if (cad.charAt(i) == ';') {
+                                aux = true;
+                            } else {
+                                error("buscar un ; encontro", String.valueOf(cad.charAt(i)));
+                            }
+                        } catch (Exception e) {
+                            error("buscar un ; encontro", "__");
                         }
                     } else {
                         error("identificador:", String.valueOf(cad.charAt(i)));
@@ -350,13 +482,17 @@ public class analizadorLexico {
                             i++;
                         }
                         if (esNum) {
-                            if (cad.charAt(i) == ';') {
-                                aux = true;
-                            } else {
-                                error("buscaba un ; encontro", String.valueOf(cad.charAt(i)));
+                            try {
+                                if (cad.charAt(i) == ';') {
+                                    aux = true;
+                                } else {
+                                    error("buscar un ; encontro", String.valueOf(cad.charAt(i)));
+                                }
+                            } catch (Exception e) {
+                                error("buscar un ; encontro", "__");
                             }
                         } else {
-                            error("expresion:", "se esperaba un identificador o un numero");
+                            error("expresion: se esperaba un identificador o un numero", "se encontro " + cad.charAt(i));
                         }
                     } catch (Exception e) {
                         error("buscaba un ; encontro", "__");
@@ -390,19 +526,27 @@ public class analizadorLexico {
                 if (cad.charAt(i) == 't') {
                     aux += cad.charAt(i);
                     i++;
-                    if (identificador()) {
-                        if (cad.charAt(i) == '=') {
-                            aux += cad.charAt(i);
+                    if (cad.charAt(i)==' '){
+                        while (cad.charAt(i)==' ')
                             i++;
-                            if (num_entero() == false) {
-                                error("buscaba un numero y se encontro", String.valueOf(cad.charAt(i)));
+                        if (identificador()) {
+                            if (cad.charAt(i) == '=') {
+                                aux += cad.charAt(i);
+                                i++;
+                                if (num_entero() == false) {
+                                    error("buscaba un numero y se encontro", String.valueOf(cad.charAt(i)));
+                                } else {
+                                    aux2 = true;
+                                }
                             } else {
-                                aux2 = true;
+                                if (cad.charAt(i)==' ')
+                                    error("buscaba un = y se encontro", "__");
+                                else
+                                    error("buscaba un = y se encontro", String.valueOf(cad.charAt(i)));
                             }
-                        } else {
-                            error("buscaba un = y se encontro", String.valueOf(cad.charAt(i)));
                         }
-                    }
+                    }else
+                        error("inicializacion: buscaba int se desconoce",String.valueOf(cad.charAt(i)));
                 } else {
                     error("buscaba un t y se encontro", String.valueOf(cad.charAt(i)));
                 }
@@ -458,4 +602,16 @@ public class analizadorLexico {
         errores = 1;
     }
 
+    public boolean eliminarEspacios() {
+        if (cad.charAt(i) == ' ') {
+            cad = cad.replaceFirst(" ", "");
+            return true;
+        }
+        return false;
+    }
+    
+    public void recorrer(){
+        while (cad.charAt(i)==' ')
+            i++;
+    }
 }

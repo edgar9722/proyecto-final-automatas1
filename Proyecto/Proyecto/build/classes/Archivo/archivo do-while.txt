@@ -1,0 +1,5 @@
+inicio
+do{
+    x+100;
+}   while  (  x  < a30);
+fin
