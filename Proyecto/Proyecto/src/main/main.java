@@ -8,8 +8,7 @@ import java.io.FileNotFoundException;
  */
 public class main {
     public static void main(String[] args) throws FileNotFoundException {
-        String f="C:\\Users\\hanse\\Documents\\Hansel\\Escuela\\ITC\\Semestre 5\\Lenguajes y automatas 1\\PROYECTO-LA1-master\\Proyecto Final\\archivo\\archivo_a";
-        System.out.println("\tANALIZADOR LÉXICO");
+        String f="C:\\Users\\hanse\\Documents\\Escuela\\Materias\\Lenguajes y Automatas 1\\Repositorio\\proyecto-final-automatas1\\Proyecto\\Proyecto\\src\\Archivo\\archivo.txt";
         new analizadorLexico(f);
     }
     
