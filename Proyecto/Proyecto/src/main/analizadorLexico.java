@@ -20,6 +20,7 @@ public class analizadorLexico {
     }
 
     public void programa(String f) throws FileNotFoundException {
+        String aux="";
         in = new DataInputStream(new FileInputStream(f));//leemos nuestro archivo de entrada
         try {
             if ((bufferIn = in.readLine()) != null) {//Leemos la primera linea de entrada que tiene que ser 'inicio'
@@ -32,6 +33,22 @@ public class analizadorLexico {
                         error("Sentencia:", "No se declaro");
                     } else {
                         declaracion_sentencia();
+                        if (errores == 0) {
+                            try {
+                                bufferIn = in.readLine();
+                                cad = bufferIn.trim();
+                                i=0;
+                                while (Character.isLetter(cad.charAt(i))) {
+                                    aux += cad.charAt(i);
+                                    i++;
+                                }
+                            } catch (Exception e) {
+                                if (aux.equalsIgnoreCase("fin"))
+                                    System.out.println("Sin errores");
+                                else
+                                    error("buscaba fin y encontro", aux);
+                            }
+                        }
                     }
                 } else {
                     //No comenzo con 'inicio'
@@ -70,9 +87,6 @@ public class analizadorLexico {
                 break;
             default:
                 error("declaracion_sentencia:", "no se encontro la sentencia: " + aux);
-        }
-        if (errores == 0) {
-            System.out.println("Sin errores");
         }
     }
 
