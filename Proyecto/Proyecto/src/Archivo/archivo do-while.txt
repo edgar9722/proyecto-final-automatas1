@@ -1,5 +1,5 @@
 inicio
 do{
-    x+100;
-}   while  (  x  < a30);
+    int x;
+} while (x<ab);
 fin
