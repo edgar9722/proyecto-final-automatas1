@@ -1,5 +1,5 @@
 inicio
 do{
-    int aaaaaaaaaaaaaaaaaa aaaaaaa;
-}while(x <= ab);
+    int a;
+}while(x<=ab);
 fin

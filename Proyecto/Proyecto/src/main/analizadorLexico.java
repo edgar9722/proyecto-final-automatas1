@@ -202,7 +202,6 @@ public class analizadorLexico {
                 if (sentencia()) {
                     bufferIn = in.readLine();
                     cad = bufferIn.trim();
-                    cad = cad.replaceAll(" ", "");
                     i = 0;
                     if (cad.charAt(i) == '}') {
                         i++;
@@ -241,7 +240,10 @@ public class analizadorLexico {
                                 error("buscaba un ( encontro", String.valueOf(cad.charAt(i)));
                             }
                         } else {
-                            error("buscaba la sentencia while y encontro", aux);
+                            if (cad.charAt(i)==' ')
+                                error("buscaba la sentencia while y encontro", "__");
+                            else
+                                error("buscaba la sentencia while y encontro", aux);
                         }
                     } else {
                         error("Do-While: buscaba un } encontro", String.valueOf(cad.charAt(i)));
