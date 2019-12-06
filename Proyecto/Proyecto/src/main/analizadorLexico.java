@@ -5,10 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-/**
- *
- * @author Ramos Hernández Juan José
- */
+
 public class analizadorLexico {
 
     DataInputStream in;
@@ -127,7 +124,6 @@ public class analizadorLexico {
                                 bufferIn = in.readLine();
                                 cad = bufferIn.trim();
                                 i=0;
-                                cad= cad.replaceAll(" ", "");
                                 if (sentencia()) {
                                     bufferIn = in.readLine();
                                     cad = bufferIn.trim();
@@ -145,9 +141,8 @@ public class analizadorLexico {
                                             bufferIn = in.readLine();
                                             cad = bufferIn.trim();
                                             i=0;
-                                            cad= cad.replaceAll(" ", "");
                                             if (sentencia()) {
-                                                i++;
+                                                
                                                 if (i != cad.length()) {
                                                         bandera = false;
                                                         error("Se buscaba un ;", "Y se encontraron mas caracteres");
@@ -203,7 +198,6 @@ public class analizadorLexico {
                 }else{
                 bufferIn = in.readLine();
                 cad = bufferIn.trim();
-                cad = cad.replaceAll(" ", "");
                 i = 0;
                 if (sentencia()) {
                     bufferIn = in.readLine();
@@ -281,8 +275,6 @@ public class analizadorLexico {
                         }else{
                             bufferIn = in.readLine();
                             cad = bufferIn.trim();
-                            i=0;
-                            cad = cad.replaceAll(" ","");
                             if (sentencia()) {
                                 bandera = true;
 
@@ -337,7 +329,6 @@ public class analizadorLexico {
                                                 bufferIn = in.readLine();
                                                 cad = bufferIn.trim();
                                                 i = 0;
-                                                cad= cad.replaceAll(" ", "");
                                                 if (sentencia()) {
                                                     bufferIn = in.readLine();
                                                     cad = bufferIn.trim();
@@ -493,40 +484,71 @@ public class analizadorLexico {
 
     public boolean declaracion_var() {
         boolean aux = false;
+        String aux2 = "";
         if (cad.charAt(i) == 'i') {
+            aux2 += cad.charAt(i);
             i++;
             if (cad.charAt(i) == 'n') {
+                aux2 += cad.charAt(i);
                 i++;
                 if (cad.charAt(i) == 't') {
+                    aux2 += cad.charAt(i);
                     i++;
-                    if (identificador()) {
-                        try {
-                            if (cad.charAt(i) == ';') {
-                                aux = true;
-                            } else {
-                                error("buscar un ; encontro", String.valueOf(cad.charAt(i)));
+                    if (cad.charAt(i) == ' ') {
+                        while (cad.charAt(i) == ' ') {
+                            i++;
+                        }
+                        if (identificador()) {
+                            try {
+                                if (cad.charAt(i) == ';') {
+                                    i++;
+                                    if (i != cad.length()) {
+                                        aux = false;
+                                        error("Se buscaba un ;", "Y se encontraron mas caracteres");
+                                    } else {
+                                        aux = true;
+                                    }
+
+                                } else {
+                                    error("buscar un ; encontro", String.valueOf(cad.charAt(i)));
+                                }
+                            } catch (Exception e) {
+                                error("buscar un ; encontro", "__");
                             }
-                        } catch (Exception e) {
-                            error("buscar un ; encontro", "__");
+                        } else {
+                            error("identificador:", String.valueOf(cad.charAt(i)));
                         }
                     } else {
-                        error("identificador:", String.valueOf(cad.charAt(i)));
+                        error("inicializacion: buscaba int se desconoce",String.valueOf(cad.charAt(i)));
                     }
+                } else {
+                    error("buscaba un t y se encontro", String.valueOf(cad.charAt(i)));
                 }
+            } else {
+                error("buscaba un n y se encontro", String.valueOf(cad.charAt(i)));
             }
+        } else {
+                aux = false;
         }
         return aux;
     }
 
     public boolean expresion() {
         boolean aux = false, esNum = false;
+         cad = cad.replaceAll(" ","");
         if (identificador()) {
             if (operador()) {
                 i++;
                 if (identificador()) {
                     try {
                         if (cad.charAt(i) == ';') {
-                            aux = true;
+                            i++;
+                            if (i != cad.length()) {
+                                aux = false;
+                                error("Se buscaba un ;", "Y se encontraron mas caracteres");
+                            } else {
+                                aux = true;
+                            }
                         } else {
                             error("buscar un ; encontro", String.valueOf(cad.charAt(i)));
                         }
@@ -542,7 +564,13 @@ public class analizadorLexico {
                         if (esNum) {
                             try {
                                 if (cad.charAt(i) == ';') {
-                                    aux = true;
+                                    i++;
+                                    if (i != cad.length()) {
+                                        aux = false;
+                                        error("Se buscaba un ;", "Y se encontraron mas caracteres");
+                                    } else {
+                                        aux = true;
+                                    }
                                 } else {
                                     error("buscar un ; encontro", String.valueOf(cad.charAt(i)));
                                 }

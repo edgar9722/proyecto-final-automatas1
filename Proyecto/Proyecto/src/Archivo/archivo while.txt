@@ -1,4 +1,4 @@
 inicio
 while(x==10)
-   x*b;
+   int baaaaaaaaaaaaaaaaaaaaaaaaa;aaaaa
 fin

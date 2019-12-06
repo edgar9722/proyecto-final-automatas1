@@ -1,6 +1,6 @@
 inicio
 if(x==10)
-	x*10;
+	int xxxxxxxxxxxxxxxxxxxxxxxxx ;
 else
-	int x10;
+	int xasdasdax;
 fin

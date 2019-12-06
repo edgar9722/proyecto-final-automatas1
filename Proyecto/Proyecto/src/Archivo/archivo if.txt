@@ -1,4 +1,4 @@
 inicio
-if(x<9)
-    int x;
+ if(AAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaa>1)
+    int asd asdasdax;
 fin
