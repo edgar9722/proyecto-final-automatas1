@@ -1,5 +1,0 @@
-inicio
-do{
-    int a;
-}while(x<=ab);
-fin

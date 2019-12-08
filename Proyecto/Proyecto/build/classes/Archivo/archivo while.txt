@@ -1,4 +1,0 @@
-inicio
-while(x==10)
-   int baaaaaaaaaaaaaaaaaaaaaaaaa;aaaaa
-fin

@@ -1,6 +1,0 @@
-inicio
-if(x==10)
-	int xxxxxxxxxxxxxxxxxxxxxxxxx;
-else
-	a+c ;
-fin

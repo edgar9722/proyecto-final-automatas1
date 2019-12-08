@@ -9,8 +9,8 @@ import java.io.IOException;
 public class analizadorLexico {
 
     DataInputStream in;
-    String bufferIn, cad;
-    int i, errores = 0;
+    String bufferIn, cad, cad2="";
+    int i, errores = 0, linea=1;
     boolean MIF=false;
   
 
@@ -28,42 +28,17 @@ public class analizadorLexico {
                 if (cad.equals("inicio")) {
                     bufferIn = in.readLine();
                     cad = bufferIn.trim();
+                    linea++;
                     if (cad.equals("fin"))//Verificamos que no haya terminado
                     {
                         error("Sentencia:", "No se declaro");
                     } else {
                         declaracion_sentencia();
-                        if (errores == 0 && !MIF) {
-                            try {
-                                bufferIn = in.readLine();
-                                cad = bufferIn.trim();
-                                i = 0;
-                                while (Character.isLetter(cad.charAt(i))) {
-                                    aux += cad.charAt(i);
-                                    i++;
-                                }
-                            } catch (Exception e) {
-                                if (aux.equalsIgnoreCase("fin")) {
-                                    System.out.println("Sin errores");
-                                } else {
-                                    error("buscaba fin y encontro", aux);
-                                }
-                            }
-                        }else
-                            if (errores == 0) {
-                                i = 0;
-                                try {
-                                    while (Character.isLetter(cad.charAt(i))) {
-                                        aux += cad.charAt(i);
-                                        i++;
-                                    }
-                                }catch (Exception e) {
-                                    if (aux.equalsIgnoreCase("fin"))
-                                        System.out.println("Sin errores");
-                                    else
-                                        error("buscaba fin y encontro", aux);
-                                }
-                            }
+                        while (!cad2.equalsIgnoreCase("fin") && errores!=1) {
+                            declaracion_sentencia();
+                        }
+                        if (errores==0)
+                            System.out.println("Sin errores");
                     }
                 } else {
                     error("buscaba inicio y encontro", cad);
@@ -71,6 +46,20 @@ public class analizadorLexico {
             }
         } catch (IOException io) {
 
+        }
+    }
+    
+    public void leerLinea() throws IOException{
+        cad2="";
+        bufferIn = in.readLine();
+        cad = bufferIn.trim();
+        i=0; linea++;
+        try {
+            while (Character.isLetter(cad.charAt(i))) {
+                cad2 += cad.charAt(i);
+                i++;
+            }
+        } catch (Exception e) {
         }
     }
 
@@ -83,8 +72,10 @@ public class analizadorLexico {
                 i++;
             }//La i termina en la posicion del caracter que no es una letra
         } catch (Exception e) {
-            error("do-while: buscaba un { encontro", "__");
-            return;
+            if (aux.equalsIgnoreCase("do")){
+                error("do-while: buscaba un { encontro", "__");
+                return;
+            }
         }
         switch (aux) {
             case "if":
@@ -92,13 +83,16 @@ public class analizadorLexico {
                 break;
             case "do":
                 DO_WHILE();
+                leerLinea();
                 break;
             case "while":
                 WHILE();
+                leerLinea();
                 break;
             case "for":
                 while (eliminarEspacios());
                 FOR();
+                leerLinea();
                 break;
             default:
                 error("declaracion_sentencia:", "no se encontro la sentencia: " + aux);
@@ -123,11 +117,11 @@ public class analizadorLexico {
                             }else{
                                 bufferIn = in.readLine();
                                 cad = bufferIn.trim();
-                                i=0;
+                                i=0; linea++;
                                 if (sentencia()) {
                                     bufferIn = in.readLine();
                                     cad = bufferIn.trim();
-                                    i=0;
+                                    i=0; linea++;
                                     try {
                                         aux="";
                                         while (Character.isLetter(cad.charAt(i))) {
@@ -136,30 +130,33 @@ public class analizadorLexico {
                                         }
                                     } catch (Exception e) {
                                     }
-                                    if (!aux.equalsIgnoreCase("") && !aux.equalsIgnoreCase("fin")){
-                                        if (aux.equalsIgnoreCase("else")) {
-                                            bufferIn = in.readLine();
-                                            cad = bufferIn.trim();
-                                            i=0;
-                                            if (sentencia()) {
-                                                
-                                                if (i != cad.length()) {
-                                                        bandera = false;
-                                                        error("Se buscaba un ;", "Y se encontraron mas caracteres");
-                                                }else{
-                                                    bandera = true;
-                                                }
+                                    if (aux.equalsIgnoreCase("else")) {
+                                        bufferIn = in.readLine();
+                                        cad = bufferIn.trim();
+                                        i=0; linea++;
+                                        if (sentencia()) {
 
-                                            } else {
-                                                bandera = false;
+                                            if (i != cad.length()) {
+                                                    bandera = false;
+                                                    error("Se buscaba un ;", "Y se encontraron mas caracteres");
+                                            }else{
+                                                bufferIn = in.readLine();
+                                                cad = bufferIn.trim();
+                                                i=0; linea++;
+                                                bandera = true;
                                             }
-                                        }else
-                                            error("se buscaba else pero se encontro", aux);
-                                    }else {
-                                        bandera = true;
-                                        MIF = true;
+                                        } else {
+                                            bandera = false;
+                                        }
                                     }
-
+                                    try {
+                                        i=0; cad2="";
+                                        while (Character.isLetter(cad.charAt(i))) {
+                                            cad2 += cad.charAt(i);
+                                            i++;
+                                        }
+                                    } catch (Exception e) {
+                                    }
                                 } else {
                                     error("sentencia:",String.valueOf(cad.charAt(i)));
                                 }
@@ -198,11 +195,11 @@ public class analizadorLexico {
                 }else{
                 bufferIn = in.readLine();
                 cad = bufferIn.trim();
-                i = 0;
+                i = 0; linea++;
                 if (sentencia()) {
                     bufferIn = in.readLine();
                     cad = bufferIn.trim();
-                    i = 0;
+                    i = 0; linea++;
                     if (cad.charAt(i) == '}') {
                         i++;
                         while (Character.isLetter(cad.charAt(i))) {
@@ -222,7 +219,7 @@ public class analizadorLexico {
                                                     bandera = false;
                                                     error("Se buscaba un ;", "Y se encontraron mas caracteres");
                                                 }else{
-                                                bandera = true;
+                                                    bandera = true;
                                                 }
                                             } else {
                                                 error("Do-While: buscaba un ; encontro", String.valueOf(cad.charAt(i)));
@@ -276,7 +273,8 @@ public class analizadorLexico {
                             error("Se buscaba un )", "Y se encontraron mas caracteres");
                         }else{
                             bufferIn = in.readLine();
-                            cad = bufferIn.trim();
+                            cad = bufferIn.trim(); 
+                            i=0; linea++;
                             if (sentencia()) {
                                 bandera = true;
 
@@ -330,11 +328,11 @@ public class analizadorLexico {
                                             } else {
                                                 bufferIn = in.readLine();
                                                 cad = bufferIn.trim();
-                                                i = 0;
+                                                i = 0; linea++;
                                                 if (sentencia()) {
                                                     bufferIn = in.readLine();
                                                     cad = bufferIn.trim();
-                                                    i = 0;
+                                                    i = 0; linea++;
                                                     if (cad.charAt(i) == '}') {
                                                         aux += cad.charAt(i);
                                                         i++;
@@ -389,7 +387,8 @@ public class analizadorLexico {
                 if (!aux) {
                     if (identificador()) {
                         aux = true;
-                    }
+                    }else
+                        error("se desconoce:", String.valueOf(cad.charAt(i)) + " No es un operador logico ni un identificador");
                 }
             } else {
                 error("operador_logico: invalido", String.valueOf(cad.charAt(i)));
@@ -464,7 +463,7 @@ public class analizadorLexico {
                 aux += cad.charAt(i);
                 i++;
                 aux2 = true;
-            }
+            }else i--;
         }
         return aux2;
     }
@@ -693,7 +692,7 @@ public class analizadorLexico {
     }
 
     public void error(String metodo, String aux) {
-        System.out.println("Error: " + metodo + " " + aux);
+        System.out.println("Error en la linea "+linea+": " + metodo + " " + aux);
         errores = 1;
     }
 

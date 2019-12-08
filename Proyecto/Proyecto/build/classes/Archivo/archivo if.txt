@@ -1,4 +1,0 @@
-inicio
- if(AAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaa>1)
-    int asdasdasdax;
-fin
